@@ -1,0 +1,13 @@
+{
+    "account":"your_account",
+    "password":"your_password",
+    "punch_in_time":"your_punch_in_time",
+    "punch_out_time":"your_punch_out_time",
+    "where_and_do_what":[
+        ["place1", "job1"],
+        ["place2", "job2"],
+        ["place3", "job3"],
+        ["place4", "job4"],
+        ["place5", "job5"]
+    ]
+}
