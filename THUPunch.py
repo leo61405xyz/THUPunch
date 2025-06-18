@@ -21,14 +21,7 @@ class Punch:
         self.place = place
         self.do_what = do_what
 
-    def Punch_in(self):
-
-        option = webdriver.ChromeOptions()
-        option.add_argument('window-size=1024x768')
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
-        driver.set_window_size(1024, 768)
-
+    def Log_in(self, driver):
         driver.get(self.url)
         driver.save_screenshot('screenie.png')
 
@@ -45,6 +38,15 @@ class Punch:
         driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
         driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
 
+    def Punch_in(self):
+
+        option = webdriver.ChromeOptions()
+        option.add_argument('window-size=1024x768')
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
+        driver.set_window_size(1024, 768)
+
+        self.Log_in(driver = driver)
         time.sleep(5)
 
         driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
@@ -61,6 +63,8 @@ class Punch:
         driver.find_element(By.XPATH, '//*[@id="btnSave2"]/p').click()
         time.sleep(60)
 
+        driver.close()
+
     def Punch_out(self):
 
         option = webdriver.ChromeOptions()
@@ -69,22 +73,7 @@ class Punch:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
         driver.set_window_size(1024, 768)
 
-        driver.get(self.url)
-        driver.save_screenshot('screenie.png')
-
-        img = Image.open("screenie.png")
-        cropped = img.crop((0+700, 875, 1024*2-700, 965))
-        cropped.save('screenie.png')
-
-        img = Image.open("screenie.png")
-        verification = pytesseract.image_to_string(img, lang='eng')
-        print(verification)
-        os.remove('screenie.png')
-
-        driver.find_element(By.CSS_SELECTOR, 'input[name="log"]').send_keys(self.account)
-        driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
-        driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
-
+        self.Log_in(driver = driver)
         time.sleep(5)
 
         driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
@@ -93,6 +82,8 @@ class Punch:
         time.sleep(1)
         driver.find_element(By.XPATH, '//*[@id="sign_out1"]').click()
         time.sleep(60)
+
+        driver.close()
 
     def Punch_time(self):
         now = datetime.now()
