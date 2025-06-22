@@ -4,7 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import time
 import os
-from datetime import datetime
+from datetime import datetime,timezone,timedelta
 from PIL import Image
 import pytesseract
 from random import sample
@@ -39,7 +39,6 @@ class Punch:
         driver.find_element(By.CSS_SELECTOR, 'input[name="log"]').send_keys(self.account)
         driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
         driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
-        time.sleep(10)
 
     def Punch_in(self):
 
@@ -97,16 +96,19 @@ class Punch:
         driver.quit()
 
     def Punch_time(self):
-        now = datetime.now()
+
+        dt = datetime.now().replace(tzinfo=timezone.utc)
+        now = dt.astimezone(timezone(timedelta(hours=8))) # 轉換時區 -> 東八區
+
         week = now.weekday()
         now_without_second = str(now).split(':')[0]+':'+str(now).split(':')[1]
 
         if str(self.punch_in_time) in str(now_without_second) and (week != 6 and week != 5):
-            return "上班"
+            return ("上班", now)
         elif str(self.punch_out_time) in str(now_without_second) and (week != 6 and week != 5):
-            return "下班"
+            return ("下班", now)
         else:
-            return "不打卡"
+            return ("不打卡", now)
 
 def main():
     while True:
@@ -126,14 +128,14 @@ def main():
         )
 
         try:
-            if sign.Punch_time() == '上班':
+            if sign.Punch_time()[0] == '上班':
                 sign.Punch_in()
                 continue
-            elif sign.Punch_time() == '下班':
+            elif sign.Punch_time()[0] == '下班':
                 sign.Punch_out()
                 continue
             else:
-                print(datetime.now(), end='\r')
+                print(sign.Punch_time()[1], end='\r')
                 continue
         except:
             continue
