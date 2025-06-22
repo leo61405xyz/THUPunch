@@ -26,7 +26,9 @@ class Punch:
         driver.save_screenshot('screenie.png')
 
         img = Image.open("screenie.png")
-        cropped = img.crop((0+700, 875, 1024*2-700, 965))
+        #width, height = img.size
+        #print(f"The image resolution is: {width}x{height}")
+        cropped = img.crop((0+350, 0+380, 1024-360, 629-220))
         cropped.save('screenie.png')
 
         img = Image.open("screenie.png")
@@ -37,11 +39,16 @@ class Punch:
         driver.find_element(By.CSS_SELECTOR, 'input[name="log"]').send_keys(self.account)
         driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
         driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
+        time.sleep(10)
 
     def Punch_in(self):
 
         option = webdriver.ChromeOptions()
         option.add_argument('window-size=1024x768')
+        option.add_argument('--no-sandbox')
+        option.add_argument('--disable-dev-shm-usage')
+        option.add_argument('--disable-gpu')
+        option.add_argument("--headless")
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
         driver.set_window_size(1024, 768)
@@ -51,7 +58,7 @@ class Punch:
 
         driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
         time.sleep(1)
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]').click()
+        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]/a').click()
         time.sleep(1)
         driver.find_element(By.XPATH, '//*[@id="sign_in1"]').click()
         time.sleep(5)
@@ -63,12 +70,16 @@ class Punch:
         driver.find_element(By.XPATH, '//*[@id="btnSave2"]/p').click()
         time.sleep(60)
 
-        driver.close()
+        driver.quit()
 
     def Punch_out(self):
 
         option = webdriver.ChromeOptions()
         option.add_argument('window-size=1024x768')
+        option.add_argument('--no-sandbox')
+        option.add_argument('--disable-dev-shm-usage')
+        option.add_argument('--disable-gpu')
+        option.add_argument("--headless")
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
         driver.set_window_size(1024, 768)
@@ -78,12 +89,12 @@ class Punch:
 
         driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
         time.sleep(1)
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]').click()
+        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]/a').click()
         time.sleep(1)
         driver.find_element(By.XPATH, '//*[@id="sign_out1"]').click()
         time.sleep(60)
 
-        driver.close()
+        driver.quit()
 
     def Punch_time(self):
         now = datetime.now()

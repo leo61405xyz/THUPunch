@@ -1,13 +1,13 @@
 {
-    "account":"your_account",
-    "password":"your_password",
-    "punch_in_time":"your_punch_in_time",
-    "punch_out_time":"your_punch_out_time",
+    "account":"D13260001",
+    "password":"GNgn00402780",
+    "punch_in_time":"08:55",
+    "punch_out_time":"15:05",
     "where_and_do_what":[
-        ["place1", "job1"],
-        ["place2", "job2"],
-        ["place3", "job3"],
-        ["place4", "job4"],
-        ["place5", "job5"]
+        ["實驗室", "DNA萃取"],
+        ["實驗室", "PCR"],
+        ["實驗室", "整理序列"],
+        ["實驗室", "整理樣本"],
+        ["實驗室", "job5"]
     ]
 }
