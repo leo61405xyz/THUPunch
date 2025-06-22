@@ -27,5 +27,5 @@ WORKDIR /app
 COPY . ./ 
 VOLUME /app
 
-RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 CMD python THUPunch.py
