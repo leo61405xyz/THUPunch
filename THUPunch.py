@@ -79,7 +79,7 @@ class Punch:
         slice_img('screenie.png', path='out')
         verification = get_verification_code(path='out')
 
-        #print(verification)
+        print('Verification: {0}'.format(verification))
         os.remove('screenie.png')
         shutil.rmtree('out')
 
@@ -88,17 +88,7 @@ class Punch:
         driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
         driver.find_element(By.XPATH, '//*[@id="wp-submit"]').click()
 
-    def Punch_in(self):
-
-        option = webdriver.ChromeOptions()
-        option.add_argument('window-size=1024x768')
-        option.add_argument('--no-sandbox')
-        option.add_argument('--disable-dev-shm-usage')
-        option.add_argument('--disable-gpu')
-        option.add_argument("--headless")
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
-        driver.set_window_size(1024, 768)
+    def Punch_in(self, driver):
 
         self.Log_in(driver = driver)
         time.sleep(5)
@@ -117,17 +107,7 @@ class Punch:
 
         driver.quit()
 
-    def Punch_out(self):
-
-        option = webdriver.ChromeOptions()
-        option.add_argument('window-size=1024x768')
-        option.add_argument('--no-sandbox')
-        option.add_argument('--disable-dev-shm-usage')
-        option.add_argument('--disable-gpu')
-        option.add_argument("--headless")
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
-        driver.set_window_size(1024, 768)
+    def Punch_out(self, driver):
 
         self.Log_in(driver = driver)
         time.sleep(5)
@@ -172,13 +152,23 @@ def main():
             do_what = where_and_do_what[1]
         )
 
+        option = webdriver.ChromeOptions()
+        option.add_argument('window-size=1024x768')
+        option.add_argument('--no-sandbox')
+        option.add_argument('--disable-dev-shm-usage')
+        option.add_argument('--disable-gpu')
+        option.add_argument("--headless")
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
+        driver.set_window_size(1024, 768)
+
         try:
             if sign.Punch_time()[0] == '上班':
-                sign.Punch_in()
+                sign.Punch_in(driver = driver)
                 print(sign.Punch_time()[1], '上班打卡成功')
                 continue
             elif sign.Punch_time()[0] == '下班':
-                sign.Punch_out()
+                sign.Punch_out(driver = driver)
                 print(sign.Punch_time()[1], '下班打卡成功')
                 continue
             else:
