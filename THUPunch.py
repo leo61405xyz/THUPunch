@@ -9,7 +9,44 @@ from PIL import Image
 import pytesseract
 from random import sample
 import json
+import sys, cv2
+import numpy as np
+import re
+import shutil
 
+def slice_img(img):
+    if not os.path.exists('out'):
+        os.makedirs('out')
+
+    img_src = cv2.imread(img)
+    img_b, img_g, img_r = cv2.split(img_src)
+
+    #cv2.imwrite('img_r.jpg', img_r)
+
+    img_gray = cv2.bitwise_not(img_r)
+    img_gray = cv2.medianBlur(img_gray, 5)
+    thresh_bin, img_bin = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY_INV)
+
+    #cv2.imwrite('img_bin.jpg', img_bin)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (40, 25))
+    img_eroded = cv2.erode(img_bin, kernel)
+
+    res = cv2.findContours(img_eroded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours = res[0]
+
+    for i in range(0, len(contours)):
+        x, y, w, h = cv2.boundingRect(contours[i])
+        #print(i, len(contours[i]))
+        #if len(contours[i]) < 10:continue
+        cv2.rectangle(img_src, (x, y), (x + w, y + h), (255, 0, 0), 10)
+        new_img = img_src[y:y + h, x:x + w]
+        cv2.imwrite('out/' + str(i) + '.jpg', new_img)
+
+    #cv2.imwrite('img_dilated_with_contours.jpg', img_src)
+
+def remove_non_arabic_numerals(text):
+    return re.sub(r'\D+', '', text)
 class Punch:
 
     def __init__(self, url, account, password, punch_in_time, punch_out_time, place, do_what):
@@ -25,16 +62,20 @@ class Punch:
         driver.get(self.url)
         driver.save_screenshot('screenie.png')
 
-        img = Image.open("screenie.png")
+        slice_img('screenie.png')
+
+        #img = Image.open("./out/18.jpg")
         #width, height = img.size
         #print(f"The image resolution is: {width}x{height}")
-        cropped = img.crop((0+350, 0+380, 1024-360, 629-220))
-        cropped.save('screenie.png')
+        #cropped = img.crop((0+350, 0+380, 1024-360, 629-220))
+        #cropped.save('screenie.png')
 
-        img = Image.open("screenie.png")
+        img = Image.open("./out/18.jpg")
         verification = pytesseract.image_to_string(img, lang='eng')
+        verification = remove_non_arabic_numerals(text = verification)
         print(verification)
         os.remove('screenie.png')
+        shutil.rmtree('./out')
 
         driver.find_element(By.CSS_SELECTOR, 'input[name="log"]').send_keys(self.account)
         driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
@@ -111,6 +152,7 @@ class Punch:
             return ("不打卡", now)
 
 def main():
+
     while True:
         with open('Job_Description.json', encoding='utf-8') as f:
             data = json.load(f)
@@ -139,6 +181,7 @@ def main():
                 continue
         except:
             continue
+
 
 if __name__ == '__main__':
     main()
