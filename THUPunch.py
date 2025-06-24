@@ -60,6 +60,7 @@ def get_verification_code(path):
             potential_verification.append(verification)
 
     return potential_verification[0] if potential_verification else None
+
 class Punch:
 
     def __init__(self, url, account, password, punch_in_time, punch_out_time, place, do_what):
@@ -85,6 +86,7 @@ class Punch:
         driver.find_element(By.CSS_SELECTOR, 'input[name="log"]').send_keys(self.account)
         driver.find_element(By.CSS_SELECTOR, 'input[name="pwd"]').send_keys(self.password)
         driver.find_element(By.CSS_SELECTOR, 'input[name="slc-captcha-answer"]').send_keys(verification)
+        driver.find_element(By.XPATH, '//*[@id="wp-submit"]').click()
 
     def Punch_in(self):
 
@@ -101,9 +103,7 @@ class Punch:
         self.Log_in(driver = driver)
         time.sleep(5)
 
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
-        time.sleep(1)
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]/a').click()
+        driver.find_element(By.XPATH, '/html/body/div/header/div/div/a[1]/i').click()
         time.sleep(1)
         driver.find_element(By.XPATH, '//*[@id="sign_in1"]').click()
         time.sleep(5)
@@ -132,9 +132,7 @@ class Punch:
         self.Log_in(driver = driver)
         time.sleep(5)
 
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/h3').click()
-        time.sleep(1)
-        driver.find_element(By.XPATH, '/html/body/div/div/aside/div/ul[2]/li[1]/a').click()
+        driver.find_element(By.XPATH, '/html/body/div/header/div/div/a[1]/i').click()
         time.sleep(1)
         driver.find_element(By.XPATH, '//*[@id="sign_out1"]').click()
         time.sleep(60)
@@ -177,12 +175,14 @@ def main():
         try:
             if sign.Punch_time()[0] == '上班':
                 sign.Punch_in()
+                print(sign.Punch_time()[1], '上班打卡成功')
                 continue
             elif sign.Punch_time()[0] == '下班':
                 sign.Punch_out()
+                print(sign.Punch_time()[1], '下班打卡成功')
                 continue
             else:
-                print(sign.Punch_time()[1], end='\r')
+                #print(sign.Punch_time()[1], end='\r')
                 continue
         except:
             continue
